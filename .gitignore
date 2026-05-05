@@ -1,0 +1,7 @@
+target/
+resultados/
+.vscode/
+*.class
+*.log
+documento.pdf
+.DS_Store
