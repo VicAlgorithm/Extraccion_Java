@@ -14,7 +14,7 @@ public class Principal {
     // Método principal estático, punto de entrada de cualquier programa Java
     public static void main(String[] args) {
         // 1. Configuración de entrada
-        String rutaPdfEntrada = "documento.pdf";
+        String rutaPdfEntrada = "a.pdf";
         File archivoPdf = new File(rutaPdfEntrada);
 
         if (!archivoPdf.exists()) {
@@ -45,12 +45,14 @@ public class Principal {
             Paso3_AnalizadorTexto analizador = new Paso3_AnalizadorTexto();
             Paso4_EscritorArchivo escritor = new Paso4_EscritorArchivo();
 
-            List<File> imagenes = lector.convertirPdfAImagenes(archivoPdf);
+            // Pasamos carpetaDestino para que los recortes base se guarden ahí dentro
+            List<File> imagenes = lector.convertirPdfAImagenes(archivoPdf, carpetaDestino);
 
             for (int i = 0; i < imagenes.size(); i++) {
                 System.out.println("Procesando página " + (i + 1) + " con OCR...");
                 File imgPagina = imagenes.get(i);
-                File imgLimpia = procesador.limpiarImagen(imgPagina);
+                // Ahora le pasamos la carpeta destino para que guarde ahí la imagen limpia
+                File imgLimpia = procesador.limpiarImagen(imgPagina, carpetaDestino);
                 String texto = analizador.extraerTexto(imgLimpia);
                 
                 escritor.escribirResultado(rutaTxtSalida, i + 1, texto, (i == 0));
