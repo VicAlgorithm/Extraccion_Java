@@ -20,7 +20,7 @@ public class Paso5_Tabla3_Recorrido {
         Map<String, String> resultados = new LinkedHashMap<>();
         
         String[] anclas = {
-            "PUNTO DE PARTIDA",
+            "PUNTO DE PARTIDA PREFERENTE DEL RECORRIDO",
             "DESTINO(S) INMEDIATO (S)",
             "DESTINO FINAL ENTREGA DE PAQUETES"
         };
@@ -79,16 +79,36 @@ public class Paso5_Tabla3_Recorrido {
 
             if (celdaAncla != null) {
                 StringBuilder sb = new StringBuilder();
-                for (int i = indiceFilaAncla + 1; i < tabla.getRows().size(); i++) {
+                java.util.Set<String> textosVistos = new java.util.LinkedHashSet<>();
+                String textoAnclaLimpio = celdaAncla.getText().trim();
+
+                // LÍMITES LATERALES: Usamos el ancho exacto del título para no invadir otras columnas
+                double margen = 5.0; // Un pequeño margen de error
+                double limiteIzquierdo = celdaAncla.getLeft() - margen;
+                double limiteDerecho = celdaAncla.getRight() + margen;
+
+                // Buscamos en la misma fila y hacia abajo
+                for (int i = indiceFilaAncla; i < tabla.getRows().size(); i++) {
                     for (RectangularTextContainer celdaDeAbajo : tabla.getRows().get(i)) {
-                        double centroX = celdaDeAbajo.getX() + (celdaDeAbajo.getWidth() / 2.0);
-                        if (centroX >= celdaAncla.getX() && centroX <= (celdaAncla.getX() + celdaAncla.getWidth())) {
+                        double centroX = celdaDeAbajo.getLeft() + (celdaDeAbajo.getWidth() / 2.0);
+                        
+                        // RESTRICCIÓN DE COLUMNA: Solo si el centro de la celda cae dentro de los límites del título
+                        if (centroX >= limiteIzquierdo && centroX <= limiteDerecho) {
                             String txt = celdaDeAbajo.getText().trim();
-                            if (!txt.isEmpty() && !txt.toUpperCase().contains(ancla.toUpperCase())) {
-                                sb.append(txt).append(" ");
+                            if (!txt.isEmpty()) {
+                                boolean esElMismoTitulo = txt.equalsIgnoreCase(textoAnclaLimpio) || txt.equalsIgnoreCase(ancla);
+                                // Filtro de títulos rosas (Mayúsculas largas)
+                                boolean esTituloNuevo = txt.equals(txt.toUpperCase()) && txt.length() > 6;
+                                
+                                if (!esElMismoTitulo && !esTituloNuevo) {
+                                    textosVistos.add(txt);
+                                }
                             }
                         }
                     }
+                }
+                for (String t : textosVistos) {
+                    sb.append(t).append(" ");
                 }
                 return sb.toString().replace("\r", " ").replace("\n", " ").replaceAll(" +", " ").trim();
             }

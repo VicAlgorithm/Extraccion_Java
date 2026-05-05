@@ -14,7 +14,7 @@ public class Principal {
     // Método principal estático, punto de entrada de cualquier programa Java
     public static void main(String[] args) {
         // 1. Configuración de entrada
-        String rutaPdfEntrada = "a.pdf";
+        String rutaPdfEntrada = "c.pdf";
         File archivoPdf = new File(rutaPdfEntrada);
 
         if (!archivoPdf.exists()) {

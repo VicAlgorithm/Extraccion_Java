@@ -71,13 +71,14 @@ public class Paso5_Tabla1_Cabecera {
 
                     if (coincide) {
                         StringBuilder sb = new StringBuilder();
+                        java.util.Set<String> textosVistos = new java.util.LinkedHashSet<>();
                         RectangularTextContainer celdaDatoInicial = null;
 
                         // 1. Buscar el primer dato a la derecha
                         for (int j = c + 1; j < fila.size(); j++) {
                             String txt = fila.get(j).getText().trim();
                             if (!txt.isEmpty()) {
-                                sb.append(txt).append(" ");
+                                textosVistos.add(txt);
                                 celdaDatoInicial = fila.get(j);
                                 break;
                             }
@@ -91,16 +92,22 @@ public class Paso5_Tabla1_Cabecera {
                             for (int i = r + 1; i < filas.size(); i++) {
                                 for (RectangularTextContainer celdaSig : filas.get(i)) {
                                     double cX = celdaSig.getLeft() + (celdaSig.getWidth() / 2.0);
-                                    // Si la celda de abajo está alineada horizontalmente con el dato
                                     if (cX >= xIni && cX <= xFin) {
                                         String txtAbajo = celdaSig.getText().trim();
-                                        // Si no está vacío y no parece un título rosa nuevo
-                                        if (!txtAbajo.isEmpty() && !txtAbajo.equals(txtAbajo.toUpperCase())) {
-                                            sb.append(txtAbajo).append(" ");
+                                        if (!txtAbajo.isEmpty()) {
+                                            // Solo ignoramos si es MAYÚSCULAS y LARGO (Título rosa)
+                                            boolean esTituloNuevo = txtAbajo.equals(txtAbajo.toUpperCase()) && txtAbajo.length() > 4;
+                                            if (!esTituloNuevo) {
+                                                textosVistos.add(txtAbajo);
+                                            }
                                         }
                                     }
                                 }
                             }
+                        }
+
+                        for (String t : textosVistos) {
+                            sb.append(t).append(" ");
                         }
 
                         if (sb.length() > 0) {
